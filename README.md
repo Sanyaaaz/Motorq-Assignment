@@ -1,146 +1,100 @@
-This repository contains a FastAPI-based backend for managing and monitoring a fleet of connected vehicles. The system handles telemetry data, diagnostics, and alert generation, and provides useful analytics on vehicle activity and status.
 
-Overview
-The system supports:
 
-Vehicle CRUD operations
+# Motorq Assignment
 
-Telemetry data ingestion and storage
+This is a FastAPI-based backend system for managing and monitoring a fleet of connected vehicles. The system supports telemetry tracking, alert generation, and basic analytics for fleet insights.
 
-Alert generation based on rules and diagnostics
+## Features
 
-Per-vehicle and fleet-wide analytics
+### Vehicle Management
 
-Auto-initialization of diagnostic codes
+* Add new vehicles
+* List all vehicles
+* Retrieve vehicle by VIN
+* Delete a vehicle
 
-Swagger documentation for testing and reference
+### Telemetry Tracking
 
-Features
-Vehicle Management:
+* Submit telemetry data (location, speed, fuel level, engine status, diagnostic codes)
+* Retrieve latest telemetry per vehicle
+* View full telemetry history
 
-Add, view, retrieve, and delete vehicles from the fleet
+### Alerts
 
-Telemetry Tracking:
+* Alerts generated for:
 
-Submit real-time telemetry data (speed, location, fuel level, engine status, diagnostics)
+  * Speed violations (over 100 km/h)
+  * Low fuel level (below 15%)
+  * Diagnostic trouble codes (with messages shown only if severity is high or if total alerts for a vehicle ≥ 10)
+* View all alerts
+* View alert by ID
 
-Automatically triggers alerts if predefined rules are violated
+### Analytics
 
-Alerts:
+* Count of active vs inactive vehicles (based on telemetry in the last 24 hours)
+* Average fuel level per vehicle
+* Total distance traveled by each vehicle in the last 24 hours
 
-Alerts generated for speed, fuel level, and diagnostic codes
+## Setup Instructions
 
-Alerts are stored and retrievable via endpoints
+### Prerequisites
 
-Diagnostic messages are shown only if severity is high or alert count exceeds 10 for a VIN
+* Python 3.9 or higher
+* pip (Python package installer)
+* Virtual environment (optional but recommended)
 
-Analytics:
+### Installation
 
-Active vs Inactive vehicles (based on last telemetry within 24 hours)
+1. Clone the repository:
 
-Average fuel level per vehicle
-
-Distance traveled in the last 24 hours
-
-Getting Started
-Prerequisites
-Python 3.9 or above
-
-pip
-
-(Optional) Virtual Environment
-
-Installation
-Clone the repository:
-
-bash
-Copy
-Edit
+```bash
 git clone https://github.com/your-username/connected-car-fleet.git
 cd connected-car-fleet
-Create a virtual environment and activate it:
+```
 
-bash
-Copy
-Edit
+2. Set up and activate a virtual environment:
+
+```bash
 python -m venv venv
-source venv/bin/activate   -Linus/mac
-venv\Scripts\activate      -Windows
-Install dependencies:
+source venv/bin/activate      # macOS/Linux
+venv\Scripts\activate         # Windows
+```
 
-bash
-Copy
-Edit
+3. Install dependencies:
+
+```bash
 pip install -r requirements.txt
-Run the FastAPI server:
+```
 
-bash
-Copy
-Edit
+4. Run the FastAPI server:
+
+```bash
 uvicorn main:app --reload
-Open the Swagger UI to explore endpoints:
+```
 
+5. Open your browser and navigate to:
+
+```
 http://127.0.0.1:8000/docs
+```
 
-API Endpoints
-Vehicles
-POST /vehicles → Add a new vehicle
+This opens the interactive Swagger UI.
 
-GET /vehicles → Get all vehicles
+## File Structure
 
-GET /vehicles/{vin} → Get a vehicle by VIN
+```
+.
+├── main.py               # FastAPI application entrypoint
+├── models.py             # SQLAlchemy models
+├── schema.py             # Pydantic schemas
+├── database.py           # Database configuration
+├── dummydata.py          # Diagnostic code seeding
+├── alerts.py             # Alert logic
+├── crud/
+│   ├── __init__.py
+│   ├── vehicle.py        # CRUD operations for vehicles
+│   ├── telemetry.py      # CRUD operations for telemetry
+│   └── analytics.py      # Fleet analytics functions
+└── fleet.db              # SQLite database (auto-created)
+```
 
-DELETE /vehicles/{vin} → Delete a vehicle
-
-Telemetry
-POST /telemetry → Submit telemetry data
-
-GET /telemetry/{vin} → Get all telemetry records for a vehicle
-
-GET /telemetry/latest/{vin} → Get latest telemetry for a vehicle
-
-Alerts
-GET /alerts → List all alerts
-
-GET /alerts/{id} → Get alert details by ID
-
-Analytics
-GET /analytics/summary → Get summary analytics (active/inactive, fuel avg, distance)
-
-GET /analytics/{vin} → Get per-vehicle analytics
-
-Diagnostic Codes
-On application startup, diagnostic codes are auto-populated into the digcodes table. These are used to evaluate incoming telemetry for issues.
-
-Alert Logic
-Speed over 100 triggers a speed alert
-
-Fuel level below 15 triggers a low fuel alert
-
-Diagnostic code alerts depend on severity (only high or when vehicle has 10+ alerts)
-
-Folder Structure
-main.py — FastAPI application and routing
-
-database.py — Database connection setup
-
-models.py — SQLAlchemy ORM models
-
-schema.py — Pydantic models
-
-dummydata.py — Seeds initial diagnostic code data
-
-crud/
-
-vehicle.py — Vehicle operations
-
-telemetry.py — Telemetry operations
-
-analytics.py — Fleet analytics
-
-alerts.py — Alert generation logic
-
-
-Swagger UI available at /docs
-
-Designed for extensibility and easy deployment
