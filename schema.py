@@ -1,6 +1,9 @@
+from unittest.mock import Base
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+
+from sqlalchemy import Column, String
 
 class VehicleBase(BaseModel):
     vin: str
@@ -40,3 +43,9 @@ class Alert(BaseModel):
     timestamp: datetime
     class Config:
         orm_mode = True
+
+class DiagnosticCode(Base):
+    __tablename__ = "diagnosticscode"
+    code = Column(String, primary_key=True)
+    description = Column(String)
+    severity = Column(String)  

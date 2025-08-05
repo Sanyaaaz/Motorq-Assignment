@@ -1,12 +1,14 @@
 from sqlalchemy import Column, String, Integer, Float, DateTime, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
+from sqlalchemy.types import TypeDecorator
 import enum
+import json
 from datetime import datetime
 
 class StatusEnum(str, enum.Enum):
     Active = "Active"
-    Maintenance = "Under Maintainance"
+    Maintenance = "Maintainance"
     Decommissioned = "Decommissioned"
 
 class EngineStatus(str, enum.Enum):
@@ -44,3 +46,9 @@ class Alert(Base):
     severity = Column(String)
     message = Column(String)
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+class DiagnosticError(Base):
+    __tablename__ = "dtc_codes"
+    code = Column(String, primary_key=True, index=True)
+    description = Column(String)
+    severity = Column(String)
