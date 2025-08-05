@@ -1,9 +1,17 @@
-from unittest.mock import Base
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel,validator
+from typing import Optional, List
 from datetime import datetime
+from enum import Enum
 
-from sqlalchemy import Column, String
+class StatusEnum(str, Enum):
+    Active = "Active"
+    Maintenance = "Maintenance"
+    Decommissioned = "Decommissioned"
+
+class EngineStatus(str, Enum):
+    On = "On"
+    Off = "Off"
+    Idle = "Idle"
 
 class VehicleBase(BaseModel):
     vin: str
@@ -11,28 +19,39 @@ class VehicleBase(BaseModel):
     model: str
     fleet_id: str
     owner: str
-    status: str
+    status: StatusEnum
 
-class VehicleCreate(VehicleBase): pass
+    
+
+class VehicleCreate(VehicleBase):
+    pass
+
 class Vehicle(VehicleBase):
-    class Config:
-        orm_mode = True
+    pass
 
 class TelemetryCreate(BaseModel):
     vin: str
     latitude: float
     longitude: float
     speed: float
-    engine_status: str
+    engine_status: EngineStatus
     fuel_level: float
     odometer: float
-    diagnostic_code: Optional[str] = None
+    diagnostic_code: Optional[List[str]] = []
     timestamp: Optional[datetime] = None
+
+    @validator("engine_status", pre=True)
+    def normalize_engine_status(cls, v):
+        if isinstance(v, str):
+            return v.capitalize()
+        return v
+
+    class Config:
+        orm_mode = True
 
 class Telemetry(TelemetryCreate):
     id: int
-    class Config:
-        orm_mode = True
+
 
 class Alert(BaseModel):
     id: int
@@ -41,11 +60,6 @@ class Alert(BaseModel):
     severity: str
     message: str
     timestamp: datetime
+
     class Config:
         orm_mode = True
-
-class DiagnosticCode(Base):
-    __tablename__ = "diagnosticscode"
-    code = Column(String, primary_key=True)
-    description = Column(String)
-    severity = Column(String)  
